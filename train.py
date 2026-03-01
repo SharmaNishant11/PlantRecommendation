@@ -1,47 +1,31 @@
 import pandas as pd
-import os
-import numpy as np
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+import joblib
 
+# Load dataset
+data = pd.read_csv("datasets/Crop_recommendation.csv")
 
+# Rename rainfall to soil_moisture
+data = data.rename(columns={"rainfall": "soil_moisture"})
 
+# Select features
+X = data[["temperature", "humidity", "soil_moisture"]]
+y = data["label"]
 
-
-DATASET_PATH = os.path.join("Datasets", "Crop_recommendation.csv")
-
-data = pd.read_csv(DATASET_PATH)
-print(data.head())
-
-# Keep only relevant columns
-df = data[['Temperature', 'Humidity', 'Rainfall', 'Crop']]
-
-# Rename Rainfall → SoilMoistureProxy (important for report clarity)
-df = df.rename(columns={'Rainfall': 'SoilMoisture'})
-
-le = LabelEncoder()
-df['PlantLabel'] = le.fit_transform(df['Crop'])
-
-def estimate_sunlight(row):
-    if row['Temperature'] > 30 and row['Humidity'] < 50:
-        return 2  # High
-    elif row['Temperature'] > 20:
-        return 1  # Medium
-    else:
-        return 0  # Low
-
-df['Sunlight'] = df.apply(estimate_sunlight, axis=1)
-X = df[['SoilMoisture', 'Sunlight', 'Humidity', 'Temperature']]
-y = df['PlantLabel']
-
+# Train-test split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-model = DecisionTreeClassifier(max_depth=6)
+# Train model
+model = RandomForestClassifier(n_estimators=200, random_state=42)
 model.fit(X_train, y_train)
 
-preds = model.predict(X_test)
-print("Accuracy:", accuracy_score(y_test, preds))
+# Evaluate
+accuracy = accuracy_score(y_test, model.predict(X_test))
+print("Model Accuracy:", accuracy)
+
+# Save model
+joblib.dump(model, "plant_model.pkl")
