@@ -3,6 +3,33 @@ import numpy as np
 import pandas as pd
 
 light_db = pd.read_csv("Datasets/plant_light_requirements.csv")
+soil_db = pd.read_csv("Datasets/plant_soil_requirements.csv")
+
+
+
+def classify_soil_moisture(value):
+    if value < 50:
+        return "dry"
+    elif value < 150:
+        return "moderate"
+    else:
+        return "wet"
+    
+def filter_by_soil(plants, soil_value):
+    sensor_soil = classify_soil_moisture(soil_value)
+    filtered = []
+
+    for plant in plants:
+        required = soil_db[soil_db["plant"] == plant]["soil_moisture"].values
+
+        if len(required) > 0 and required[0] == sensor_soil:
+            filtered.append(plant)
+
+    if not filtered:
+        return plants
+
+    return filtered
+
 
 def classify_light(lux):
     if lux < 10000:
@@ -47,7 +74,6 @@ def get_top_plants(temp, humidity, soil_moisture):
     return list(top_plants)
 
 
-# Example full pipeline test
 if __name__ == "__main__":
     temp = 30
     humidity = 70
@@ -55,7 +81,9 @@ if __name__ == "__main__":
     lux = 45000
 
     top_plants = get_top_plants(temp, humidity, soil_moisture)
-    final_plants = filter_by_light(top_plants, lux)
+    light_filtered = filter_by_light(top_plants, lux)
+    final_plants = filter_by_soil(light_filtered, soil_moisture)
 
     print("ML Recommendations:", top_plants)
-    print("Final After Light Filter:", final_plants)
+    print("After Light Filter:", light_filtered)
+    print("Final Recommendations:", final_plants)
