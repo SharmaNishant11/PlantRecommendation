@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 import joblib
 
 # Load dataset
-data = pd.read_csv("datasets/Crop_recommendation.csv")
+data = pd.read_csv("Datasets/Crop_recommendation.csv")
 
 # Rename rainfall to soil_moisture
 data = data.rename(columns={"rainfall": "soil_moisture"})
@@ -20,7 +20,12 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # Train model
-model = RandomForestClassifier(n_estimators=200, random_state=42)
+model = RandomForestClassifier(
+    n_estimators=300,
+    max_depth=None,
+    min_samples_split=2,
+    random_state=42
+)
 model.fit(X_train, y_train)
 
 # Evaluate
