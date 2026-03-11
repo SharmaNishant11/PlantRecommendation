@@ -1,8 +1,70 @@
-We want to create a sensor which can determine if a patch of soil is good for planting, and what plants are suited for that area, depending upon the soil moisture and sunlight it gets. The user can also input their location so our software could use information, such as typical weather and climate of the area, to better evaluate what plants to recommend. We also have an LCD display that outputs current moisture when watering.
+# 🌱 PlantRec – Smart Plant Recommendation System
 
-Features:
-Soil moisture monitoring
-Light/ temperature monitoring
-An LCD display of current moisture and light levels
-An app that recommends plants based on soil moisture, light, and location’s climate
-The user will input the displayed soil moisture and light levels, and their location
+An **IoT + Machine Learning + Web Dashboard** system that recommends plants based on environmental conditions such as **soil moisture, temperature, humidity, and sunlight**.
+
+The system collects real-time sensor data using an **ESP32/Arduino**, processes it through a **Random Forest ML model**, and displays recommendations on a **web dashboard**.
+
+---
+
+# 🚀 Features
+
+• Real-time sensor monitoring  
+• Machine Learning plant recommendations  
+• Web dashboard visualization  
+• Live sensor graphs  
+• Environmental data storage  
+• ESP32 IoT integration  
+
+---
+
+# 🧠 Technologies Used
+
+| Component | Technology |
+|--------|--------|
+| Backend API | Flask |
+| Machine Learning | Scikit-learn |
+| Model | Random Forest |
+| Hardware | ESP32 / Arduino |
+| Sensors | Soil Moisture + Light |
+| Dashboard | HTML + CSS + JavaScript |
+| Database | SQLite |
+| Visualization | Chart.js |
+
+---
+
+# 📂 Project Structure
+# 🌱 PlantRec – Smart Plant Recommendation System
+
+An **IoT + Machine Learning + Web Dashboard** system that recommends plants based on environmental conditions such as **soil moisture, temperature, humidity, and sunlight**.
+
+The system collects real-time sensor data using an **ESP32/Arduino**, processes it through a **Random Forest ML model**, and displays recommendations on a **web dashboard**.
+
+---
+
+# 🚀 Features
+
+• Real-time sensor monitoring  
+• Machine Learning plant recommendations  
+• Web dashboard visualization  
+• Live sensor graphs  
+• Environmental data storage  
+• ESP32 IoT integration  
+
+---
+
+# 🧠 Technologies Used
+
+| Component | Technology |
+|--------|--------|
+| Backend API | Flask |
+| Machine Learning | Scikit-learn |
+| Model | Random Forest |
+| Hardware | ESP32 / Arduino |
+| Sensors | Soil Moisture + Light |
+| Dashboard | HTML + CSS + JavaScript |
+| Database | SQLite |
+| Visualization | Chart.js |
+
+---
+
+# 📂 Project Structure
