@@ -96,6 +96,40 @@
 
       <div class="conditions-summary" id="condSummary"></div>
     </section>
+    <section class="card live-card">
+
+  <div class="card-label">03 — Live Sensors</div>
+  <h2>Real-Time<br><em>Environment</em></h2>
+
+  <div class="live-grid">
+
+    <div class="live-item">
+      <span>🌡 Temperature</span>
+      <strong><span id="tempValue">--</span> °C</strong>
+    </div>
+
+    <div class="live-item">
+      <span>💧 Humidity</span>
+      <strong><span id="humidityValue">--</span> %</strong>
+    </div>
+
+    <div class="live-item">
+      <span>🌱 Soil Moisture</span>
+      <strong><span id="moistureValue">--</span></strong>
+    </div>
+
+    <div class="live-item">
+      <span>☀ Light</span>
+      <strong><span id="lightValue">--</span> lux</strong>
+    </div>
+
+  </div>
+
+  <div class="chart-container">
+    <canvas id="sensorChart"></canvas>
+  </div>
+
+</section>
 
   </main>
 
@@ -104,8 +138,15 @@
     <span class="footer-dot">·</span>
     <span>Powered by ML</span>
   </footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script src="script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const script = document.createElement("script");
+  script.src = "script.js";
+  document.body.appendChild(script);
+});
+</script>
 <script>
   // update bars live
   function updateBars() {
@@ -126,39 +167,57 @@
   updateBars();
 
   // patch runRec to also update UI state
-  const _origRunRec = runRec;
-  window.runRec = function() {
+  // patch runRec after script.js loads
+window.addEventListener("load", function () {
+
+  const _origRunRec = window.runRec;
+
+  window.runRec = function () {
+
     const btn = document.getElementById("mainBtn");
     btn.classList.add("loading");
     btn.querySelector(".btn-text").textContent = "Analysing…";
 
-    // intercept fetch via monkey-patching results
     const origFetch = window.fetch;
-    window.fetch = function(...args) {
+
+    window.fetch = function (...args) {
       return origFetch(...args).then(res => {
+
         window.fetch = origFetch;
+
         btn.classList.remove("loading");
         btn.querySelector(".btn-text").textContent = "Analyse Environment";
+
         document.getElementById("emptyState").style.display = "none";
 
-        // build condition summary
         const temp = document.getElementById("temperature").value;
         const hum  = document.getElementById("humidity").value;
+
         const summary = document.getElementById("condSummary");
-        summary.innerHTML = `<span>🌡 ${temp}°C</span><span>💧 ${hum}%</span><span>✦ Scan complete</span>`;
+        summary.innerHTML =
+          `<span>🌡 ${temp}°C</span>
+           <span>💧 ${hum}%</span>
+           <span>✦ Scan complete</span>`;
+
         summary.classList.add("visible");
 
         return res;
+
       }).catch(err => {
+
         window.fetch = origFetch;
+
         btn.classList.remove("loading");
         btn.querySelector(".btn-text").textContent = "Analyse Environment";
+
         throw err;
       });
     };
 
     _origRunRec();
   };
+
+});
 
   // stagger list items on insert
   const observer = new MutationObserver(() => {

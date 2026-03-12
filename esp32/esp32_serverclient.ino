@@ -1,17 +1,18 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* ssid = "YOUR_WIFI_NAME"; // replace with your WiFi SSID
-const char* password = "YOUR_WIFI_PASSWORD"; // replace with your WiFi password
+const char* ssid = "Nishant";
+const char* password = "nishantsharma";
 
-String serverName = "http://YOUR_PC_IP:5000/predict"; // replace with your PC's IP address and Flask endpoint
- 
-// sensor pins
-// replace with your actual sensor pins
-int lightPin = 34; 
-int soilPin = 35;
+// Replace with your laptop IP running Flask
+String serverName = "http://172.20.10.14:5000/sensor";
+
+// Sensor pins
+int soilPin = 32;
+int lightPin = 26;
 
 void setup() {
+
   Serial.begin(115200);
 
   WiFi.begin(ssid, password);
@@ -23,19 +24,19 @@ void setup() {
     Serial.print(".");
   }
 
-  Serial.println("\nConnected to WiFi");
+  Serial.println("\nConnected!");
 }
 
 void loop() {
 
-  int lightValue = analogRead(lightPin);
   int soilValue = analogRead(soilPin);
+  int lightValue = analogRead(lightPin);
 
-  Serial.print("Light: ");
-  Serial.println(lightValue);
+  // Fake values if you don't have sensors connected yet
+  float temperature = 28;
+  float humidity = 65;
 
-  Serial.print("Soil: ");
-  Serial.println(soilValue);
+  Serial.println("Sending sensor data");
 
   if (WiFi.status() == WL_CONNECTED) {
 
@@ -44,27 +45,20 @@ void loop() {
     http.begin(serverName);
     http.addHeader("Content-Type", "application/json");
 
-    // replace temperature and humidity with actual sensor values if you have them
-    String jsonData = "{";
-    jsonData += "\"temperature\":30,";
-    jsonData += "\"humidity\":60,";
-    jsonData += "\"soil_moisture\":" + String(soilValue) + ",";
-    jsonData += "\"light_intensity\":" + String(lightValue);
-    jsonData += "}";
+    String json = "{";
+    json += "\"temperature\":" + String(temperature) + ",";
+    json += "\"humidity\":" + String(humidity) + ",";
+    json += "\"soil_moisture\":" + String(soilValue) + ",";
+    json += "\"light\":" + String(lightValue);
+    json += "}";
 
-    int httpResponseCode = http.POST(jsonData);
+    int responseCode = http.POST(json);
 
-    Serial.print("HTTP Response: ");
-    Serial.println(httpResponseCode);
-
-    if (httpResponseCode > 0) {
-      String response = http.getString();
-      Serial.println("Server Response:");
-      Serial.println(response);
-    }
+    Serial.print("Response: ");
+    Serial.println(responseCode);
 
     http.end();
   }
 
-  delay(10000); // send every 10 seconds
+  delay(5000);
 }

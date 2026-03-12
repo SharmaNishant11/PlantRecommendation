@@ -1,20 +1,84 @@
-from flask import Flask, request, jsonifypyth
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from predict import get_top_plants, filter_by_light, filter_by_soil
 
 app = Flask(__name__)
 CORS(app)
 
-app = Flask(__name__)
+# latest sensor readings
+latest_data = {
+    "temperature": 30,
+    "humidity": 60,
+    "soil_moisture": 200,
+    "light": 20000
+}
 
-# store latest data for dashboard
-latest_sensor_data = {}
-latest_predictions = {}
+# =============================
+# ESP32 SENSOR DATA ENDPOINT
+# =============================
+
+@app.route("/sensor", methods=["POST"])
+def sensor():
+
+    global latest_data
+
+    data = request.json
+
+    latest_data = {
+        "temperature": data["temperature"],
+        "humidity": data["humidity"],
+        "soil_moisture": data["soil_moisture"],
+        "light": data["light"]
+    }
+
+    return jsonify({"status":"sensor data received"})
+
+
+# =============================
+# SIMULATE SENSOR DATA
+# =============================
+
+@app.route("/simulate")
+def simulate():
+
+    global latest_data
+
+    temp = 30
+    humidity = 60
+    soil_moisture = 210
+    lux = 20000
+
+    top_plants = get_top_plants(temp, humidity, soil_moisture)
+    light_filtered = filter_by_light(top_plants, lux)
+    final_plants = filter_by_soil(light_filtered, soil_moisture)
+
+    latest_data = {
+        "temperature": temp,
+        "humidity": humidity,
+        "soil_moisture": soil_moisture,
+        "light": lux,
+        "ml_recommendations": top_plants,
+        "final_recommendations": final_plants
+    }
+
+    return jsonify(latest_data)
+
+
+# =============================
+# DASHBOARD FETCHES DATA HERE
+# =============================
+
+@app.route("/data")
+def data():
+    return jsonify(latest_data)
+
+
+# =============================
+# PLANT RECOMMENDATION API
+# =============================
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    global latest_sensor_data
-    global latest_predictions
 
     data = request.json
 
@@ -27,21 +91,9 @@ def predict():
     light_filtered = filter_by_light(top_plants, lux)
     final_plants = filter_by_soil(light_filtered, soil_moisture)
 
-    latest_sensor_data = data
-    latest_predictions = {
+    return jsonify({
         "ml_recommendations": top_plants,
         "final_recommendations": final_plants
-    }
-
-    return jsonify(latest_predictions)
-
-
-# NEW endpoint for dashboard
-@app.route("/data")
-def get_data():
-    return jsonify({
-        "sensor": latest_sensor_data,
-        "predictions": latest_predictions
     })
 
 

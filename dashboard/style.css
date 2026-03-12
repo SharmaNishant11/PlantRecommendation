@@ -407,3 +407,31 @@ footer {
   .card { width: 100%; }
   .leaf-deco { display: none; }
 }
+.live-card{
+  margin-top:40px;
+}
+
+.live-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+  margin:20px 0 30px;
+}
+
+.live-item{
+  background:#f7f7f7;
+  border-radius:12px;
+  padding:16px;
+  display:flex;
+  justify-content:space-between;
+  font-size:15px;
+}
+
+.live-item strong{
+  font-size:18px;
+}
+
+.chart-container{
+  width:100%;
+  height:300px;
+}
